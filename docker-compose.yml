@@ -1,0 +1,20 @@
+services:
+  app-java:
+    image: av-poo:1
+    container_name: av-poo
+    environment:
+      db_url: "jdbc:postgresql://postgres:5432/avaliacao-poo"
+      user: "postgres"
+      password: "postgres123"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: "avaliacao-poo"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres123"
+    ports:
+      - "5432:5432"

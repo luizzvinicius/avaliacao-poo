@@ -9,11 +9,15 @@ import java.sql.SQLException;
 
 public class ConnectionFactory implements AutoCloseable {
     private static Connection conn = null;
+    private static String dbUrl = System.getenv("db_url");
+    private static String user = System.getenv("user");
+    private static String password = System.getenv("password");
 
     public static Connection getConn() {
         if (conn == null) {
             try {
-                conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/av-poo", "postgres", "vinicius");
+                // container postgres | local: localhost
+                conn = DriverManager.getConnection(dbUrl, user, password);
                 criarBanco(conn);
             } catch (SQLException e) {
                 System.out.println("Erro ao se conectar ao banco: " + e.getMessage());
@@ -32,6 +36,7 @@ public class ConnectionFactory implements AutoCloseable {
             stmt.executeBatch();
         } catch (IOException e) {
             System.out.println("Erro ao ler tables.sql: " + e.getMessage());
+            System.exit(1);
         } catch (SQLException e) {
             System.out.println("Erro ao criar preparedStatement: " + e.getMessage());
             System.exit(1);
