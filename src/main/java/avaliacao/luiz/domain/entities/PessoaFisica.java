@@ -6,8 +6,8 @@ public class PessoaFisica extends Cliente {
     private String cpf;
     private LocalDate dataNascimento;
 
-    public PessoaFisica(int id, String nome, String telefone, String cpf, LocalDate dataNascimento) {
-        super(id, nome, telefone);
+    public PessoaFisica(String nome, String telefone, String cpf, LocalDate dataNascimento) {
+        super(nome, telefone);
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
     }
@@ -27,10 +27,12 @@ public class PessoaFisica extends Cliente {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("PessoaFisica{");
-        sb.append("cpf='").append(cpf).append('\'');
+        final StringBuilder sb = new StringBuilder("PessoaFisica {");
+        sb.append("nome='").append(super.getNome()).append('\'');
+        sb.append(", telefone='").append(super.getTelefone()).append('\'');
+        sb.append(", cpf='").append(cpf).append('\'');
         sb.append(", dataNascimento=").append(dataNascimento);
-        sb.append('}');
+        sb.append("}");
         return sb.toString();
     }
 }

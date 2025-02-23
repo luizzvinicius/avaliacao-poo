@@ -4,8 +4,8 @@ public class Empresa extends Cliente {
     private String cnpj;
     private String nomeResponsavel;
 
-    public Empresa(int id, String nome, String telefone, String cnpj, String nomeResponsavel) {
-        super(id, nome, telefone);
+    public Empresa(String nome, String telefone, String cnpj, String nomeResponsavel) {
+        super(nome, telefone);
         this.cnpj = cnpj;
         this.nomeResponsavel = nomeResponsavel;
     }
@@ -23,12 +23,15 @@ public class Empresa extends Cliente {
         this.nomeResponsavel = nomeResponsavel;
     }
 
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Empresa{");
-        sb.append("cnpj='").append(cnpj).append('\'');
+        final StringBuilder sb = new StringBuilder("Empresa {");
+        sb.append("nome='").append(super.getNome()).append('\'');
+        sb.append(", telefone='").append(super.getTelefone()).append('\'');
+        sb.append(", cnpj='").append(cnpj).append('\'');
         sb.append(", nomeResponsavel='").append(nomeResponsavel).append('\'');
-        sb.append('}');
+        sb.append("}");
         return sb.toString();
     }
 }

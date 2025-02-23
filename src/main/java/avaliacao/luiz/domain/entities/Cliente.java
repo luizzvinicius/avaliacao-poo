@@ -8,8 +8,7 @@ public abstract class Cliente {
     private String telefone;
     private List<Compra> compras;
 
-    protected Cliente(int id, String nome, String telefone) {
-        this.id = id;
+    protected Cliente(String nome, String telefone) {
         this.nome = nome;
         this.telefone = telefone;
     }

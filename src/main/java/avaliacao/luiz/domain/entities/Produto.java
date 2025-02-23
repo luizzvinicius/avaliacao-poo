@@ -6,11 +6,17 @@ public class Produto {
     private int id;
     private String nome;
     private double preco;
-    private int quantidade;
+    private double quantidade;
     private List<Compra> compras;
 
-    public Produto(int id, String nome, double preco, int quantidade) {
+    public Produto(int id, String nome, double preco, double quantidade) {
         this.id = id;
+        this.nome = nome;
+        this.preco = preco;
+        this.quantidade = quantidade;
+    }
+
+    public Produto(String nome, double preco, double quantidade) {
         this.nome = nome;
         this.preco = preco;
         this.quantidade = quantidade;
@@ -36,7 +42,7 @@ public class Produto {
         this.preco = preco;
     }
 
-    public int getQuantidade() {
+    public double getQuantidade() {
         return quantidade;
     }
 
@@ -55,11 +61,10 @@ public class Produto {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Product{");
-        sb.append("id=").append(id);
-        sb.append(", nome='").append(nome).append('\'');
+        sb.append("nome='").append(nome).append('\'');
         sb.append(", preco=").append(preco);
         sb.append(", quantidade=").append(quantidade);
-        sb.append('}');
+        sb.append("}");
         return sb.toString();
     }
 }
