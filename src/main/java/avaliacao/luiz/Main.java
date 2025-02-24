@@ -5,6 +5,7 @@ import avaliacao.luiz.domain.entities.Empresa;
 import avaliacao.luiz.domain.entities.PessoaFisica;
 import avaliacao.luiz.domain.entities.Produto;
 import avaliacao.luiz.infra.ConnectionFactory;
+import avaliacao.luiz.infra.ProdutoDao;
 import avaliacao.luiz.utils.Utils;
 
 import java.sql.Connection;
@@ -15,7 +16,6 @@ public class Main {
     static IMetodos[] metodos = {Main::cadastrarCliente, Main::cadastrarProduto, Main::venderProduto};
 
     public static void main(String[] args) {
-
         try (Connection conn = ConnectionFactory.getConn(); Utils scan = new Utils()) {
             while (true) {
                 System.out.println(conn);
@@ -57,8 +57,7 @@ public class Main {
         double quantidade = scanner.lerDouble("Quantidade do produto: ");
 
         Produto p = new Produto(nome, preco, quantidade);
-        System.out.println(p);
-        // salvar no banco
+        new ProdutoDao(conn).insert(p);
     }
 
     private static void venderProduto(Connection conn, Utils scanner) {
