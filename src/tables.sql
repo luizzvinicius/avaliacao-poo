@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS cliente(
 	"id" serial,
 	"nome" varchar(100) constraint NN_cliente_nome not null,
-	"telefone" varchar(11) constraint NN_cliente_tel not null,
-	"cpf" varchar(11),
+	"telefone" varchar(11) unique constraint NN_cliente_tel not null,
+	"cpf" varchar(11) unique,
 	"data_nascimento" date,
-	"cnpj" varchar(14),
+	"cnpj" varchar(14) unique,
 	"nome_responsavel" varchar(100),
 	primary key (id)
 );
@@ -13,7 +13,7 @@ create table if not exists produto(
 	"id" serial,
 	"nome" varchar(100) constraint NN_produto_nome not null,
 	"preco" float8 constraint NN_produto_preco not null,
-	"quantidade" float8 constraint NN_produto_qtd not null,
+	"quantidade" float8 constraint NN_produto_qtd not null check(quantidade >= 0),
 	primary key (id)
 );
 --
@@ -21,7 +21,7 @@ create table if not exists pagamentos (
 	"id" serial,
 	"id_compra" int constraint NN_pagamentos_id_compra not null,
 	"tipo" varchar(10) constraint NN_pagamentos_tipo not null,
-	"valor_total" float8 constraint NN_pagamentos_valor not null,
+	"valor_total" float8 constraint NN_pagamentos_valor not null check(valor_total > 0),
 	primary key (id)
 );
 --
@@ -50,8 +50,8 @@ create table if not exists item_venda (
 	"id" serial,
 	"id_compra" int constraint NN_item_venda_id_compra not null,
 	"id_produto" int constraint NN_item_venda_id_prod not null,
-	"preco" float8 constraint NN_item_venda_preco not null,
-	"quantidade" float8 constraint NN_item_venda_qtd not null,
+	"preco" float8 constraint NN_item_venda_preco not null check(quantidade > 0),
+	"quantidade" float8 constraint NN_item_venda_qtd not null check(quantidade > 0),
 	primary key (id),
 	foreign key (id_compra) references compras(id) on delete cascade,
 	foreign key (id_produto) references produto(id) on delete cascade
