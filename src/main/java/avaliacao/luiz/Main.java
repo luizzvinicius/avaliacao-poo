@@ -11,18 +11,22 @@ import java.sql.Connection;
 import java.time.LocalDate;
 
 public class Main {
-    static String[] opcoes = {"Cadastrar cliente", "Cadastrar Produto", "Vender Produto"};
+    static String[] opcoes = {"Cadastrar cliente", "Cadastrar Produto", "Vender Produto", "Sair"};
     static IMetodos[] metodos = {Main::cadastrarCliente, Main::cadastrarProduto, Main::venderProduto};
 
     public static void main(String[] args) {
 
         try (Connection conn = ConnectionFactory.getConn(); Utils scan = new Utils()) {
-            System.out.println("Bem-vindo a aplicação de vendas");
-            for (int i = 0; i < opcoes.length; i++) {
-                System.out.printf("%d- %s%n", i + 1, opcoes[i]);
+            while (true) {
+                System.out.println(conn);
+                System.out.println("Bem-vindo a aplicação de vendas");
+                for (int i = 0; i < opcoes.length; i++) {
+                    System.out.printf("%d- %s%n", i + 1, opcoes[i]);
+                }
+                int opt = scan.lerOption("Digite uma opção: ", 1, opcoes.length, "Opção inválida");
+                if (opt+1 == opcoes.length) break;
+                metodos[opt].accept(conn, scan);
             }
-            int opt = scan.lerOption("Digite uma opção: ", 1, metodos.length, "Opção inválida");
-            metodos[opt].accept(conn, scan);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -54,6 +58,7 @@ public class Main {
 
         Produto p = new Produto(nome, preco, quantidade);
         System.out.println(p);
+        // salvar no banco
     }
 
     private static void venderProduto(Connection conn, Utils scanner) {
