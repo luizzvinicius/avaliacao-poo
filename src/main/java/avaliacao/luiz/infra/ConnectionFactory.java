@@ -16,7 +16,6 @@ public class ConnectionFactory implements AutoCloseable {
     public static Connection getConn() {
         if (conn == null) {
             try {
-                // container postgres | local: localhost
                 conn = DriverManager.getConnection(dbUrl, user, password);
                 criarBanco(conn);
             } catch (SQLException e) {
@@ -29,9 +28,9 @@ public class ConnectionFactory implements AutoCloseable {
     private static void criarBanco(Connection conn) {
         var path = Paths.get("src/tables.sql");
         try (var stmt = conn.createStatement()) {
-            var file = Files.readString(path).replace("\r\n", "").split(";");
+            var file = Files.readString(path).split("--");
             for (String command : file) {
-                stmt.addBatch(command + ";");
+                stmt.addBatch(command);
             }
             stmt.executeBatch();
         } catch (IOException e) {
