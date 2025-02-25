@@ -46,7 +46,7 @@ public class Produto {
         return quantidade;
     }
 
-    public void setQuantidade(int quantidade) {
+    public void setQuantidade(double quantidade) {
         this.quantidade = quantidade;
     }
 
@@ -60,11 +60,10 @@ public class Produto {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Product{");
-        sb.append("nome='").append(nome).append('\'');
-        sb.append(", preco=").append(preco);
-        sb.append(", quantidade=").append(quantidade);
-        sb.append("}");
+        final StringBuilder sb = new StringBuilder();
+        sb.append(nome).append(" | ");
+        sb.append("R$ ").append(preco).append(" | " );
+        sb.append("Quantidade: ").append(quantidade);
         return sb.toString();
     }
 }

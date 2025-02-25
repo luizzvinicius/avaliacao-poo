@@ -2,6 +2,7 @@ package avaliacao.luiz.utils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
@@ -101,6 +102,13 @@ public class Utils implements AutoCloseable {
                 System.out.println("Data inválida");
             }
         }
+    }
+
+    public <T> void mostraArrayFormatado(List<T> lista) {
+        for (int i = 0; i < lista.size(); i++) {
+            System.out.printf("%d- %s%n", i+1, lista.get(i).toString());
+        }
+        System.out.println("");
     }
 
     @Override
