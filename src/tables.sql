@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS cliente(
 create table if not exists produto(
 	"id" serial,
 	"nome" varchar(100) constraint NN_produto_nome not null,
-	"preco" float8 constraint NN_produto_preco not null,
+	"preco" float8 constraint NN_produto_preco not null check(preco > 0),
 	"quantidade" float8 constraint NN_produto_qtd not null check(quantidade >= 0),
 	primary key (id)
 );
@@ -50,7 +50,7 @@ create table if not exists item_venda (
 	"id" serial,
 	"id_compra" int constraint NN_item_venda_id_compra not null,
 	"id_produto" int constraint NN_item_venda_id_prod not null,
-	"preco" float8 constraint NN_item_venda_preco not null check(quantidade > 0),
+	"preco" float8 constraint NN_item_venda_preco not null check(preco > 0),
 	"quantidade" float8 constraint NN_item_venda_qtd not null check(quantidade > 0),
 	primary key (id),
 	foreign key (id_compra) references compras(id) on delete cascade,
