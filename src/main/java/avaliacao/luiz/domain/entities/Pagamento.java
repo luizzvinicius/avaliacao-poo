@@ -2,14 +2,20 @@ package avaliacao.luiz.domain.entities;
 
 public class Pagamento {
     private int id;
-    private TipoPagamento tipo;
-    private int id_compra;
+    private String tipo;
+    private int idCompra;
     private double total;
 
-    public Pagamento(int id, TipoPagamento tipo, int id_compra, double total) {
+    public Pagamento(int id, String tipo, int idCompra, double total) {
         this.id = id;
         this.tipo = tipo;
-        this.id_compra = id_compra;
+        this.idCompra = idCompra;
+        this.total = total;
+    }
+
+    public Pagamento(String tipo, int idCompra, double total) {
+        this.tipo = tipo;
+        this.idCompra = idCompra;
         this.total = total;
     }
 
@@ -17,11 +23,11 @@ public class Pagamento {
         return id;
     }
 
-    public TipoPagamento getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoPagamento tipo) {
+    public void setTipo(String tipo) {
         this.tipo = tipo;
     }
 
@@ -33,26 +39,7 @@ public class Pagamento {
         this.total = total;
     }
 
-    public int getId_compra() {
-        return id_compra;
-    }
-
-    public void setId_compra(int id_compra) {
-        this.id_compra = id_compra;
-    }
-}
-
-enum TipoPagamento {
-    CARTAO_CREDITO("CREDITO"), BOLETO("BOLETO"), PIX("PIX");
-
-    private final String tipo;
-
-    TipoPagamento(String tipo) {
-        this.tipo = tipo;
-    }
-
-    @Override
-    public String toString() {
-        return tipo;
+    public int getIdCompra() {
+        return idCompra;
     }
 }

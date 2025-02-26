@@ -3,9 +3,10 @@ package avaliacao.luiz.infra;
 import avaliacao.luiz.domain.entities.Cliente;
 import avaliacao.luiz.domain.entities.Empresa;
 import avaliacao.luiz.domain.entities.PessoaFisica;
-import org.postgresql.core.SqlCommand;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

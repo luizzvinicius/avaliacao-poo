@@ -1,21 +1,18 @@
 package avaliacao.luiz;
 
-import avaliacao.luiz.domain.entities.Cliente;
-import avaliacao.luiz.domain.entities.Empresa;
-import avaliacao.luiz.domain.entities.PessoaFisica;
-import avaliacao.luiz.domain.entities.Produto;
+import avaliacao.luiz.domain.entities.*;
+import avaliacao.luiz.domain.entities.metodos_pagamento.MetodoPagamento;
 import avaliacao.luiz.domain.exceptions.EntradaInvalidaExpt;
 import avaliacao.luiz.domain.exceptions.NaoEncontradoExpt;
 import avaliacao.luiz.domain.exceptions.RegistroDuplicadoExpt;
-import avaliacao.luiz.infra.ClienteDao;
-import avaliacao.luiz.infra.ConnectionFactory;
-import avaliacao.luiz.infra.ProdutoDao;
+import avaliacao.luiz.infra.*;
 import avaliacao.luiz.utils.Utils;
 
 import java.sql.Connection;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class Main {
     static String[] opcoes = {"Cadastrar cliente", "Cadastrar Produto", "Vender Produto", "Listar clientes", "Sair"};
@@ -24,7 +21,7 @@ public class Main {
     public static void main(String[] args) {
         try (Connection conn = ConnectionFactory.getConn(); Utils scan = new Utils()) {
             while (true) {
-                System.out.println(conn);
+                // System.out.println(conn);
                 System.out.println("Bem-vindo a aplicação de vendas");
                 for (int i = 0; i < opcoes.length; i++) {
                     System.out.printf("%d- %s%n", i + 1, opcoes[i]);
@@ -108,11 +105,19 @@ public class Main {
     private static void venderProduto(Connection conn, Utils scanner) {
         var clienteconn = new ClienteDao(conn);
         int clienteId = scanner.lerInt("Digite o id do cliente: ");
-        Cliente c = clienteconn.select(clienteId).orElseThrow(() -> new NaoEncontradoExpt("cliente"));
+        Optional<Cliente> c = clienteconn.select(clienteId);
+        try {
+            if (c.isEmpty()) throw new NaoEncontradoExpt("cliente");
+        } catch (NaoEncontradoExpt e) {
+            System.out.println(e.getMessage());
+            return;
+        }
 
         var produtoconn = new ProdutoDao(conn);
         List<Produto> produtos = produtoconn.selectAll();
-        List<Produto> carrinho = new ArrayList<>();
+        List<ItemVenda> carrinho = new ArrayList<>();
+        var compraConn = new CompraDao(conn);
+        int idCompra = compraConn.insert(new Compra(c.get().getId()));
         while (true) {
             List<Produto> produtosFiltrados = produtos.stream().filter(p -> p.getQuantidade() > 0).toList();
             try {
@@ -124,23 +129,44 @@ public class Main {
             scanner.mostraArrayFormatado(produtosFiltrados);
             int indexProduto = scanner.lerOption("Selecione o produto: ", 1, produtos.size(), "Produto selecionado inválido");
             Produto p = produtos.get(indexProduto);
-            double quantidade = scanner.lerOption("Selecione a quantidade de " + p.getNome() + ": ", 1, (int) p.getQuantidade(), "Quantidade inválida") + 1;
+            double quantidade = scanner.lerOption("Selecione a quantidade de " + p.getNome() + ": ", 1, (int) p.getQuantidade(), "Quantidade inválida") + 1.0;
             System.out.println(p.getNome() + " selecionada");
-            carrinho.add(new Produto(p.getId(), p.getNome(), p.getPreco(), quantidade));
             p.setQuantidade(p.getQuantidade() - quantidade);
+            carrinho.add(new ItemVenda(p.getId(), idCompra, p.getPreco(), quantidade));
             System.out.println(produtos);
-            System.out.println("Deseja adicionar mais produtos no carrinho?");
-            System.out.println("1- Sim\n2- Não");
+            System.out.println("Deseja adicionar mais produtos no carrinho?\n1- Sim\n2- Não");
             int continuar = scanner.lerOption("Opção: ", 1, 2, "Opção inválida") + 1;
             if (continuar == 2) break;
         }
         System.out.println("----- Fechamento da conta -----");
-        System.out.println("Cliente: " + c);
+        System.out.println("Cliente: " + c.get());
         scanner.mostraArrayFormatado(carrinho);
         double total = carrinho.stream().reduce(0d, (acc, p) -> acc + (p.getQuantidade() * p.getPreco()), Double::sum);
-        System.out.println("Total R$ " + total);
-        // forma pagamento
-        // inserir no banco
+
+        int optPagamento = scanner.lerOption("1- Boleto\n2- Cartão de crédito\n3- Pix\nOpção: ", 1, 3, "Opção inválida") + 1;
+
+        double valorPago;
+        String tipoPagamento = "";
+        switch (optPagamento) {
+            case 1 -> {
+                valorPago = MetodoPagamento.Boleto.pagar(total);
+                tipoPagamento = "BOLETO";
+            }
+            case 2 -> {
+                valorPago = MetodoPagamento.CartaoCredito.pagar(total);
+                tipoPagamento = "CARTAO";
+            }
+            case 3 -> {
+                valorPago = MetodoPagamento.Pix.pagar(total);
+                tipoPagamento = "PIX";
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + optPagamento);
+        }
+
+        var itemVendaConn = new ItemVendaDao(conn);
+        carrinho.forEach(itemVendaConn::insert);
+        int idPagamento = new PagamentoDao(conn).insert(new Pagamento(tipoPagamento, idCompra, valorPago));
+        compraConn.updateIdPagamento(idCompra, idPagamento);
     }
 
     private static void listarClientes(Connection conn, Utils scanner) {

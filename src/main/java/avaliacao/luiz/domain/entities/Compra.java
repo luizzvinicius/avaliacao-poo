@@ -3,34 +3,37 @@ package avaliacao.luiz.domain.entities;
 import java.time.LocalDateTime;
 
 public class Compra {
-    private Produto produto;
-    private Cliente cliente;
-    private Pagamento pagamento;
-    private int quantidade_produto;
+    private int id;
+    private int idCliente;
+    private int idPagamento;
     private LocalDateTime dataCompra;
 
-    public Compra(Produto produto, Cliente cliente, Pagamento pagamento, int quantidade_produto) {
-        this.produto = produto;
-        this.cliente = cliente;
-        this.pagamento = pagamento;
-        this.quantidade_produto = quantidade_produto;
+    public Compra(int idCliente) {
+        this.idCliente = idCliente;
         this.dataCompra = LocalDateTime.now();
     }
 
-    public Produto getProduto() {
-        return produto;
+    public Compra(int id, int idCliente, int idPagamento, LocalDateTime dataCompra) {
+        this.id = id;
+        this.idCliente = idCliente;
+        this.idPagamento = idPagamento;
+        this.dataCompra = dataCompra;
     }
 
-    public void setProduto(Produto produto) {
-        this.produto = produto;
+    public int getIdCliente() {
+        return idCliente;
     }
 
-    public Cliente getCliente() {
-        return cliente;
+    public void setIdCliente(int idCliente) {
+        this.idCliente = idCliente;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
+    public int getIdPagamento() {
+        return idPagamento;
+    }
+
+    public void setIdPagamento(int idPagamento) {
+        this.idPagamento = idPagamento;
     }
 
     public LocalDateTime getDataCompra() {
@@ -39,15 +42,5 @@ public class Compra {
 
     public void setDataCompra(LocalDateTime dataCompra) {
         this.dataCompra = dataCompra;
-    }
-
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("Compra{");
-        sb.append("produto=").append(produto);
-        sb.append(", cliente=").append(cliente);
-        sb.append(", dataCompra=").append(dataCompra);
-        sb.append('}');
-        return sb.toString();
     }
 }
