@@ -1,7 +1,15 @@
 package avaliacao.luiz;
 
-import avaliacao.luiz.domain.entities.*;
-import avaliacao.luiz.infra.*;
+import avaliacao.luiz.domain.entities.Cliente;
+import avaliacao.luiz.domain.entities.Empresa;
+import avaliacao.luiz.domain.entities.PessoaFisica;
+import avaliacao.luiz.domain.entities.Produto;
+import avaliacao.luiz.domain.exceptions.EntradaInvalidaExpt;
+import avaliacao.luiz.domain.exceptions.NaoEncontradoExpt;
+import avaliacao.luiz.domain.exceptions.RegistroDuplicadoExpt;
+import avaliacao.luiz.infra.ClienteDao;
+import avaliacao.luiz.infra.ConnectionFactory;
+import avaliacao.luiz.infra.ProdutoDao;
 import avaliacao.luiz.utils.Utils;
 
 import java.sql.Connection;
@@ -31,40 +39,76 @@ public class Main {
     }
 
     private static void cadastrarCliente(Connection conn, Utils scanner) {
+        var clienteConn = new ClienteDao(conn);
         System.out.println("\nO cliente é pessoa física ou jurídica?\n1- Física\n2- Jurídica");
         int opt = scanner.lerOption("Digite uma opção: ", 1, 2, "Opção inválida");
         String nome = scanner.lerString("Nome do cliente: ", "Nome inválido");
         String telefone = scanner.lerOnzeDigitos("Telefone do cliente (Apenas números): ", "Telefone inválido");
 
+        try {
+            if (clienteConn.selectField("telefone", telefone).isPresent()) throw new RegistroDuplicadoExpt("telefone");
+        } catch (RegistroDuplicadoExpt e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
         Cliente cliente;
         if (opt == 0) {
             String cpf = scanner.lerOnzeDigitos("CPF do cliente (Apenas números): ", "CPF inválido");
+            try {
+                if (clienteConn.selectField("cpf", cpf).isPresent()) throw new RegistroDuplicadoExpt("cpf");
+            } catch (RegistroDuplicadoExpt e) {
+                System.out.println(e.getMessage());
+                return;
+            }
             LocalDate dataNascimento = scanner.lerData("Data de nascimento (xx/xx/xxxx): ");
             cliente = new PessoaFisica(nome, telefone, cpf, dataNascimento);
         } else {
             String cnpj = scanner.lerCnpj("CNPJ do cliente (Apenas números): ", "CNPJ inválido");
+            try {
+                if (clienteConn.selectField("cnpj", cnpj).isPresent()) throw new RegistroDuplicadoExpt("cnpj");
+            } catch (RegistroDuplicadoExpt e) {
+                System.out.println(e.getMessage());
+                return;
+            }
             String nomeEmpresa = scanner.lerString("Nome da empresa: ", "Nome inválido");
             cliente = new Empresa(nome, telefone, cnpj, nomeEmpresa);
         }
-        // verificar se telefone, cpf e cnpj está cadastrado
-        new ClienteDao(conn).insert(cliente);
+        clienteConn.insert(cliente);
     }
 
     private static void cadastrarProduto(Connection conn, Utils scanner) {
+        var produtoConn = new ProdutoDao(conn);
         String nome = scanner.lerString("\nNome do produto: ", "Nome inválido");
+        try {
+            if (produtoConn.select(nome).isPresent()) throw new RegistroDuplicadoExpt("nome");
+        } catch (RegistroDuplicadoExpt e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
         double preco = scanner.lerDouble("Preço do produto: ");
+        try {
+            if (preco <= 0) throw new EntradaInvalidaExpt("Preço");
+        } catch (EntradaInvalidaExpt e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+
         double quantidade = scanner.lerDouble("Quantidade do produto: ");
-
-        // validar preco e quantidade
-
-        Produto p = new Produto(nome, preco, quantidade);
-        new ProdutoDao(conn).insert(p);
+        try {
+            if (quantidade <= 0) throw new EntradaInvalidaExpt("Quantidade");
+        } catch (EntradaInvalidaExpt e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+        produtoConn.insert(new Produto(nome, preco, quantidade));
     }
 
     private static void venderProduto(Connection conn, Utils scanner) {
         var clienteconn = new ClienteDao(conn);
         int clienteId = scanner.lerInt("Digite o id do cliente: ");
-        Cliente c = clienteconn.select(clienteId).orElseThrow(() -> new NotFoundExpt("cliente"));
+        Cliente c = clienteconn.select(clienteId).orElseThrow(() -> new NaoEncontradoExpt("cliente"));
 
         var produtoconn = new ProdutoDao(conn);
         List<Produto> produtos = produtoconn.selectAll();
@@ -72,8 +116,8 @@ public class Main {
         while (true) {
             List<Produto> produtosFiltrados = produtos.stream().filter(p -> p.getQuantidade() > 0).toList();
             try {
-                if (produtosFiltrados.isEmpty()) throw new NotFoundExpt("Produto");
-            } catch (NotFoundExpt e) {
+                if (produtosFiltrados.isEmpty()) throw new NaoEncontradoExpt("Produto");
+            } catch (NaoEncontradoExpt e) {
                 System.out.println(e.getMessage());
                 return;
             }

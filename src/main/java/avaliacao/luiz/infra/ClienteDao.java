@@ -3,10 +3,9 @@ package avaliacao.luiz.infra;
 import avaliacao.luiz.domain.entities.Cliente;
 import avaliacao.luiz.domain.entities.Empresa;
 import avaliacao.luiz.domain.entities.PessoaFisica;
+import org.postgresql.core.SqlCommand;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -89,5 +88,30 @@ public class ClienteDao {
             System.out.println("Erro ao buscar clientes: " + e.getMessage());
         }
         return clientes;
+    }
+
+    public Optional<Cliente> selectField(String campo, String valor) {
+        String sql = String.format("SELECT * FROM cliente WHERE %s = ?", campo);
+        Optional<Cliente> c = Optional.empty();
+        try (var st = conn.prepareStatement(sql)) {
+            st.setString(1, valor);
+            var result = st.executeQuery();
+            while (result.next()) {
+                var resId = result.getInt("id");
+                var nome = result.getString("nome");
+                if (nome == null) return c;
+                var telefone = result.getString("telefone");
+                var cpf = result.getString("cpf");
+                if (cpf != null) {
+                    var data = result.getDate("data_nascimento").toLocalDate();
+                    c = Optional.of(new PessoaFisica(resId, nome, telefone, cpf, data));
+                } else {
+                    c = Optional.of(new Empresa(resId, nome, telefone, result.getString("cnpj"), result.getString("nome_responsavel")));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao buscar cliente: " + e.getMessage());
+        }
+        return c;
     }
 }

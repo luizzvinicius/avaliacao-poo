@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class ProdutoDao {
     private final Connection conn;
@@ -54,5 +55,23 @@ public class ProdutoDao {
             System.out.println("Erro ao selecionar produto: " + e.getMessage());
         }
         return produtos;
+    }
+
+    public Optional<Produto> select(String nome) {
+        final String sql = "SELECT * FROM produto WHERE nome = ?";
+        Optional<Produto> optProduto = Optional.empty();
+        try (var st = conn.prepareStatement(sql)) {
+            st.setString(1, nome);
+            var result = st.executeQuery();
+            while (result.next()) {
+                optProduto = Optional.of(new Produto(
+                        result.getInt("id"), result.getString("nome"),
+                        result.getDouble("preco"), result.getDouble("quantidade")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao selecionar produto: " + e.getMessage());
+        }
+        return optProduto;
     }
 }
