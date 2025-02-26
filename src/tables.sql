@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS cliente(
 --
 create table if not exists produto(
 	"id" serial,
-	"nome" varchar(100) constraint NN_produto_nome not null,
+	"nome" varchar(100) unique constraint NN_produto_nome not null,
 	"preco" float8 constraint NN_produto_preco not null check(preco > 0),
 	"quantidade" float8 constraint NN_produto_qtd not null check(quantidade >= 0),
 	primary key (id)
@@ -28,7 +28,7 @@ create table if not exists pagamentos (
 create table if not exists compras(
 	"id" serial,
 	"id_cliente" int constraint NN_pagamento_id_cliente not null,
-	"id_pagamento" int constraint NN_pagamento_id_pag not null,
+	"id_pagamento" int,
 	"data_compra" date constraint NN_pagamento_data not null,
 	primary key (id),
 	foreign key (id_cliente) references cliente(id) on delete cascade,
