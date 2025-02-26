@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
-    static String[] opcoes = {"Cadastrar cliente", "Cadastrar Produto", "Vender Produto", "Sair"};
-    static IMetodos[] metodos = {Main::cadastrarCliente, Main::cadastrarProduto, Main::venderProduto};
+    static String[] opcoes = {"Cadastrar cliente", "Cadastrar Produto", "Vender Produto", "Listar clientes", "Sair"};
+    static IMetodos[] metodos = {Main::cadastrarCliente, Main::cadastrarProduto, Main::venderProduto, Main::listarClientes};
 
     public static void main(String[] args) {
         try (Connection conn = ConnectionFactory.getConn(); Utils scan = new Utils()) {
@@ -99,7 +99,11 @@ public class Main {
         // inserir no banco
     }
 
-    // listar clientes
+    private static void listarClientes(Connection conn, Utils scanner) {
+        var clienteConn = new ClienteDao(conn);
+        var clientes = clienteConn.selectAll();
+        scanner.mostraArrayFormatado(clientes);
+    }
 
     @FunctionalInterface
     public interface IMetodos {

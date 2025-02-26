@@ -37,8 +37,8 @@ public class PessoaFisica extends Cliente {
         final StringBuilder sb = new StringBuilder("Pessoa Física ");
         sb.append(super.getNome()).append(" | ");
         sb.append(super.getTelefone()).append(" | ");
-        sb.append("CPF").append(cpf).append(" | ");
-        sb.append("data de nascimento").append(dataNascimento);
+        sb.append("CPF ").append(cpf).append(" | ");
+        sb.append("data de nascimento ").append(dataNascimento);
         return sb.toString();
     }
 }

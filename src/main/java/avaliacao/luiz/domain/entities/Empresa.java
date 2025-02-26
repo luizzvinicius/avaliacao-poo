@@ -33,8 +33,8 @@ public class Empresa extends Cliente {
         final StringBuilder sb = new StringBuilder("Empresa ");
         sb.append(super.getNome()).append(" | ");
         sb.append(super.getTelefone()).append(" | ");
-        sb.append("CNPJ").append(cnpj).append(" | ");
-        sb.append("Reponsável").append(nomeResponsavel);
+        sb.append("CNPJ ").append(cnpj).append(" | ");
+        sb.append("Reponsável ").append(nomeResponsavel);
         return sb.toString();
     }
 }
