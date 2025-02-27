@@ -146,7 +146,6 @@ public class Main {
         double total = carrinho.stream().reduce(0d, (acc, p) -> acc + (p.getQuantidade() * p.getPreco()), Double::sum);
 
         int optPagamento = scanner.lerOption("1- Boleto\n2- Cartão de crédito\n3- Pix\nOpção: ", 1, 3) + 1;
-
         double valorPago;
         String tipoPagamento = "";
         switch (optPagamento) {
@@ -162,7 +161,7 @@ public class Main {
                 valorPago = new MetodoPagamento(new Pix()).pagar(total);
                 tipoPagamento = "PIX";
             }
-            default -> throw new RuntimeException("Unexpected value: " + optPagamento);
+            default -> throw new EntradaInvalidaExpt("Opção Pagamento " + optPagamento);
         }
 
         var itemVendaConn = new ItemVendaDao(conn);
