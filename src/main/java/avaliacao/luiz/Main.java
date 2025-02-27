@@ -1,7 +1,10 @@
 package avaliacao.luiz;
 
 import avaliacao.luiz.domain.entities.*;
+import avaliacao.luiz.domain.entities.metodos_pagamento.Boleto;
+import avaliacao.luiz.domain.entities.metodos_pagamento.CartaoCredito;
 import avaliacao.luiz.domain.entities.metodos_pagamento.MetodoPagamento;
+import avaliacao.luiz.domain.entities.metodos_pagamento.Pix;
 import avaliacao.luiz.domain.exceptions.EntradaInvalidaExpt;
 import avaliacao.luiz.domain.exceptions.NaoEncontradoExpt;
 import avaliacao.luiz.domain.exceptions.RegistroDuplicadoExpt;
@@ -19,14 +22,14 @@ public class Main {
     static IMetodos[] metodos = {Main::cadastrarCliente, Main::cadastrarProduto, Main::venderProduto, Main::listarClientes};
 
     public static void main(String[] args) {
-        try (Connection conn = ConnectionFactory.getConn(); Utils scan = new Utils()) {
+        try (Connection conn = ConnectionFactory.getConn(); final Utils scan = new Utils()) {
             while (true) {
                 // System.out.println(conn);
                 System.out.println("Bem-vindo a aplicação de vendas");
                 for (int i = 0; i < opcoes.length; i++) {
                     System.out.printf("%d- %s%n", i + 1, opcoes[i]);
                 }
-                int opt = scan.lerOption("Digite uma opção: ", 1, opcoes.length, "Opção inválida");
+                int opt = scan.lerOption("Digite uma opção: ", 1, opcoes.length);
                 if (opt + 1 == opcoes.length) break;
                 metodos[opt].accept(conn, scan);
             }
@@ -38,7 +41,7 @@ public class Main {
     private static void cadastrarCliente(Connection conn, Utils scanner) {
         var clienteConn = new ClienteDao(conn);
         System.out.println("\nO cliente é pessoa física ou jurídica?\n1- Física\n2- Jurídica");
-        int opt = scanner.lerOption("Digite uma opção: ", 1, 2, "Opção inválida");
+        int opt = scanner.lerOption("Digite uma opção: ", 1, 2);
         String nome = scanner.lerString("Nome do cliente: ", "Nome inválido");
         String telefone = scanner.lerOnzeDigitos("Telefone do cliente (Apenas números): ", "Telefone inválido");
 
@@ -114,14 +117,14 @@ public class Main {
         }
 
         var produtoconn = new ProdutoDao(conn);
-        List<Produto> produtos = produtoconn.selectAll();
+        List<Produto> produtos = produtoconn.select();
         List<ItemVenda> carrinho = new ArrayList<>();
         var compraConn = new CompraDao(conn);
         int idCompra = compraConn.insert(new Compra(c.get().getId()));
         while (true) {
             List<Produto> produtosFiltrados = produtos.stream().filter(p -> p.getQuantidade() > 0).toList();
             try {
-                if (produtosFiltrados.isEmpty()) throw new NaoEncontradoExpt("Produto");
+                if (produtosFiltrados.isEmpty()) throw new NaoEncontradoExpt("Produtos");
             } catch (NaoEncontradoExpt e) {
                 System.out.println(e.getMessage());
                 return;
@@ -130,12 +133,11 @@ public class Main {
             int indexProduto = scanner.lerOption("Selecione o produto: ", 1, produtos.size(), "Produto selecionado inválido");
             Produto p = produtos.get(indexProduto);
             double quantidade = scanner.lerOption("Selecione a quantidade de " + p.getNome() + ": ", 1, (int) p.getQuantidade(), "Quantidade inválida") + 1.0;
-            System.out.println(p.getNome() + " selecionada");
+            System.out.printf("%.0f %s adicionados ao carrinho%n%n", quantidade, p.getNome());
+            produtoconn.updateQuantidade(p, p.getQuantidade() - quantidade);
             p.setQuantidade(p.getQuantidade() - quantidade);
             carrinho.add(new ItemVenda(p.getId(), idCompra, p.getPreco(), quantidade));
-            System.out.println(produtos);
-            System.out.println("Deseja adicionar mais produtos no carrinho?\n1- Sim\n2- Não");
-            int continuar = scanner.lerOption("Opção: ", 1, 2, "Opção inválida") + 1;
+            int continuar = scanner.lerOption("Deseja adicionar mais produtos no carrinho?\n1- Sim\n2- Não\nOpção: ", 1, 2) + 1;
             if (continuar == 2) break;
         }
         System.out.println("----- Fechamento da conta -----");
@@ -143,24 +145,24 @@ public class Main {
         scanner.mostraArrayFormatado(carrinho);
         double total = carrinho.stream().reduce(0d, (acc, p) -> acc + (p.getQuantidade() * p.getPreco()), Double::sum);
 
-        int optPagamento = scanner.lerOption("1- Boleto\n2- Cartão de crédito\n3- Pix\nOpção: ", 1, 3, "Opção inválida") + 1;
+        int optPagamento = scanner.lerOption("1- Boleto\n2- Cartão de crédito\n3- Pix\nOpção: ", 1, 3) + 1;
 
         double valorPago;
         String tipoPagamento = "";
         switch (optPagamento) {
             case 1 -> {
-                valorPago = MetodoPagamento.Boleto.pagar(total);
+                valorPago = new MetodoPagamento(new Boleto()).pagar(total);
                 tipoPagamento = "BOLETO";
             }
             case 2 -> {
-                valorPago = MetodoPagamento.CartaoCredito.pagar(total);
+                valorPago = new MetodoPagamento(new CartaoCredito()).pagar(total);
                 tipoPagamento = "CARTAO";
             }
             case 3 -> {
-                valorPago = MetodoPagamento.Pix.pagar(total);
+                valorPago = new MetodoPagamento(new Pix()).pagar(total);
                 tipoPagamento = "PIX";
             }
-            default -> throw new IllegalStateException("Unexpected value: " + optPagamento);
+            default -> throw new RuntimeException("Unexpected value: " + optPagamento);
         }
 
         var itemVendaConn = new ItemVendaDao(conn);

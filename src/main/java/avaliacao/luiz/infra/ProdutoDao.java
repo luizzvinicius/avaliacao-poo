@@ -40,8 +40,8 @@ public class ProdutoDao {
         }
     }
 
-    public List<Produto> selectAll() {
-        final String sql = "SELECT * FROM produto";
+    public List<Produto> select() {
+        final String sql = "SELECT * FROM produto WHERE quantidade > 0";
         List<Produto> produtos = new ArrayList<>();
         try (var st = conn.prepareStatement(sql)) {
             var result = st.executeQuery();
@@ -58,7 +58,7 @@ public class ProdutoDao {
     }
 
     public Optional<Produto> select(String nome) {
-        final String sql = "SELECT * FROM produto WHERE nome = ?";
+        final String sql = "SELECT * FROM produto WHERE nome = ? AND quantidade > 0";
         Optional<Produto> optProduto = Optional.empty();
         try (var st = conn.prepareStatement(sql)) {
             st.setString(1, nome);
