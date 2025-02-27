@@ -87,6 +87,20 @@ public class Utils implements AutoCloseable {
         }
     }
 
+    public int lerOption(String msg, int min, int max) {
+        while (true) {
+            var num = this.lerInt(msg);
+            try {
+                if (num < min || num > max) {
+                    throw new IllegalArgumentException("Opção inválida\n");
+                }
+                return num - 1;
+            } catch (IllegalArgumentException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     public LocalDate lerData(String msg) {
         while (true) {
             System.out.print(msg);
@@ -108,7 +122,7 @@ public class Utils implements AutoCloseable {
         for (int i = 0; i < lista.size(); i++) {
             System.out.printf("%d- %s%n", i+1, lista.get(i).toString());
         }
-        System.out.println("");
+        System.out.println();
     }
 
     @Override
