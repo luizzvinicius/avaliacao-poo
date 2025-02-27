@@ -14,6 +14,9 @@ Critérios de Avaliação
 - Estruturação do projeto em camadas (View, BO, VO, DAO);
 - Uso de exceções (deve-se cria exceções próprias e tratá-las corretamente).
 
+## Uso de Polimorfismo
+    Métodos nos DAOs
+    Classe Utils
 ## Uso dos Design Patterns
     1. Factory: classe dedicada para a criação da conexão com o banco de dados
     2. Singleton: estratégia para a criação de única conexão com banco de dados
