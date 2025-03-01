@@ -6,7 +6,7 @@ import avaliacao.luiz.infra.CompraDao;
 import java.sql.Connection;
 
 public class CompraServico {
-    public static int insertCompra(Connection conn, Compra c) {
+    public static int insert(Connection conn, Compra c) {
         return new CompraDao(conn).insert(c);
     }
 

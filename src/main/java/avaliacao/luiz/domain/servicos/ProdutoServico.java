@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.util.List;
 
 public class ProdutoServico {
-    public static void cadastrarProduto(Connection conn, Utils util) {
+    public static void insert(Connection conn, Utils util) {
         var produtoConn = new ProdutoDao(conn);
         String nome = util.lerString("\nNome do produto: ", "Nome inválido");
         try {

@@ -33,8 +33,8 @@ public class ClienteDao {
                 default -> throw new RuntimeException("Invalid type for cliente");
             }
 
-            st.executeUpdate();
-            System.out.println("Cliente inserido.");
+            var row = st.executeUpdate();
+            if (row > 0) System.out.println("Cliente inserido.");
         } catch (SQLException e) {
             System.out.println("Erro ao cadastrar cliente: " + e.getMessage());
         }

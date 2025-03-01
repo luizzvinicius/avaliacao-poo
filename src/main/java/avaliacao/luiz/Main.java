@@ -10,7 +10,7 @@ import java.sql.Connection;
 
 public class Main {
     static String[] opcoes = {"Cadastrar cliente", "Cadastrar Produto", "Vender Produto", "Listar clientes", "Sair"};
-    static IMetodos[] metodos = {ClienteServico::cadastrarCliente, ProdutoServico::cadastrarProduto, VendaServico::venderProduto, ClienteServico::listarClientes};
+    static IMetodos[] metodos = {ClienteServico::cadastrar, ProdutoServico::insert, VendaServico::venderProduto, ClienteServico::listar};
 
     public static void main(String[] args) {
         try (final Connection conn = ConnectionFactory.getConn(); final Utils scan = new Utils()) {

@@ -13,10 +13,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public class ClienteServico {
-    public static void cadastrarCliente(Connection conn, Utils util) {
+    public static void cadastrar(Connection conn, Utils util) {
         var clienteConn = new ClienteDao(conn);
-        System.out.println("\nO cliente é pessoa física ou jurídica?\n1- Física\n2- Jurídica");
-        int opt = util.lerOption("Digite uma opção: ", 1, 2);
+        int opt = util.lerOption("\nO cliente é pessoa física ou jurídica?\n1- Física\n2- Jurídica\nDigite uma opção: ", 1, 2);
         String nome = util.lerString("Nome do cliente: ", "Nome inválido");
         String telefone = util.lerOnzeDigitos("Telefone do cliente (Apenas números): ", "Telefone inválido");
 
@@ -52,19 +51,16 @@ public class ClienteServico {
         clienteConn.insert(cliente);
     }
 
-    public static Optional<Cliente> selecionarCliente(Connection conn, Utils scanner) {
-        var clienteconn = new ClienteDao(conn);
+    public static Cliente select(Connection conn, Utils scanner) {
         int clienteId = scanner.lerInt("Digite o id do cliente: ");
-        Optional<Cliente> c = clienteconn.select(clienteId);
-        try {
-            if (c.isEmpty()) throw new NaoEncontradoExpt("cliente");
-        } catch (NaoEncontradoExpt e) {
-            System.out.println(e.getMessage());
-        }
-        return c;
+        Optional<Cliente> c = new ClienteDao(conn).select(clienteId);
+
+        if (c.isEmpty()) throw new NaoEncontradoExpt("cliente");
+
+        return c.get();
     }
 
-    public static void listarClientes(Connection conn, Utils util) {
+    public static void listar(Connection conn, Utils util) {
         var clientes = new ClienteDao(conn).selectAll();
         util.mostraArrayFormatado(clientes);
     }

@@ -6,7 +6,7 @@ import avaliacao.luiz.infra.PagamentoDao;
 import java.sql.Connection;
 
 public class PagamentoServico {
-    public static int insertPagamento(Connection conn, Pagamento p) {
+    public static int insert(Connection conn, Pagamento p) {
         return new PagamentoDao(conn).insert(p);
     }
 }

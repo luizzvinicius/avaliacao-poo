@@ -23,6 +23,5 @@ public class ItemVendaDao {
         } catch (SQLException e) {
             System.out.println("Erro ao cadastrar item-venda: " + e.getMessage());
         }
-
     }
 }

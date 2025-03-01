@@ -12,23 +12,21 @@ import avaliacao.luiz.utils.Utils;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class VendaServico {
     public static void venderProduto(Connection conn, Utils utils) {
-        Optional<Cliente> c = ClienteServico.selecionarCliente(conn, utils);
-        if (c.isEmpty()) return;
+        Cliente c = ClienteServico.select(conn, utils);
 
         List<Produto> produtos = ProdutoServico.select(conn);
         List<ItemVenda> carrinho = new ArrayList<>();
-        int idCompra = CompraServico.insertCompra(conn, new Compra(c.get().getId()));
+        int idCompra = CompraServico.insert(conn, new Compra(c.getId()));
         while (true) {
             List<Produto> produtosFiltrados = produtos.stream().filter(p -> p.getQuantidade() > 0).toList();
             try {
                 if (produtosFiltrados.isEmpty()) throw new NaoEncontradoExpt("Produtos");
             } catch (NaoEncontradoExpt e) {
                 System.out.println(e.getMessage());
-                return;
+                return; // ou break
             }
             utils.mostraArrayFormatado(produtosFiltrados);
             int indexProduto = utils.lerOption("Selecione o produto: ", 1, produtos.size(), "Produto selecionado inválido");
@@ -42,7 +40,7 @@ public class VendaServico {
             if (continuar == 2) break;
         }
 
-        fechamentoConta(conn, utils, c.get(), carrinho, idCompra);
+        fechamentoConta(conn, utils, c, carrinho, idCompra);
     }
 
     private static void fechamentoConta(Connection conn, Utils utils, Cliente c, List<ItemVenda> carrinho, int idCompra) {
@@ -69,8 +67,8 @@ public class VendaServico {
             default -> throw new EntradaInvalidaExpt("Opção Pagamento " + optPagamento);
         }
 
-        carrinho.forEach(i -> ItemVendaServico.insertItemServico(conn, i));
-        int idPagamento = PagamentoServico.insertPagamento(conn, new Pagamento(tipoPagamento, idCompra, valorPago));
+        carrinho.forEach(i -> ItemVendaServico.insert(conn, i));
+        int idPagamento = PagamentoServico.insert(conn, new Pagamento(tipoPagamento, idCompra, valorPago));
         CompraServico.updateIdPagamento(conn, idCompra, idPagamento);
     }
 }
