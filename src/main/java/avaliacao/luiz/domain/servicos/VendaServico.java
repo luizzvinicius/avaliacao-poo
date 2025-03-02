@@ -15,7 +15,13 @@ import java.util.List;
 
 public class VendaServico {
     public static void venderProduto(Connection conn, Utils utils) {
-        Cliente c = ClienteServico.select(conn, utils);
+        Cliente c;
+        try {
+            c = ClienteServico.select(conn, utils);
+        } catch (NaoEncontradoExpt e) {
+            System.out.println(e.getMessage());
+            return;
+        }
 
         List<Produto> produtos = ProdutoServico.select(conn);
         List<ItemVenda> carrinho = new ArrayList<>();

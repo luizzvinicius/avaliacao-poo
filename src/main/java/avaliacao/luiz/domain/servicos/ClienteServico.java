@@ -55,13 +55,17 @@ public class ClienteServico {
         int clienteId = scanner.lerInt("Digite o id do cliente: ");
         Optional<Cliente> c = new ClienteDao(conn).select(clienteId);
 
-        if (c.isEmpty()) throw new NaoEncontradoExpt("cliente");
+        if (c.isEmpty()) throw new NaoEncontradoExpt("Cliente");
 
         return c.get();
     }
 
     public static void listar(Connection conn, Utils util) {
         var clientes = new ClienteDao(conn).selectAll();
+        if (clientes.isEmpty()) {
+            System.out.println("Sem clientes cadastrados\n");
+            return;
+        }
         util.mostraArrayFormatado(clientes);
     }
 }

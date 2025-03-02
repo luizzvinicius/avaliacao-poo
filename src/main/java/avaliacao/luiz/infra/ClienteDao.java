@@ -58,8 +58,8 @@ public class ClienteDao {
                 } else {
                     c = Optional.of(new Empresa(resId, nome, telefone, result.getString("cnpj"), result.getString("nome_responsavel")));
                 }
+                System.out.println("Cliente " + c.get().getNome() + " selecionado.");
             }
-            System.out.println("Cliente " + c.get().getNome() + " selecionado.");
         } catch (SQLException e) {
             System.out.println("Erro ao buscar cliente: " + e.getMessage());
         }

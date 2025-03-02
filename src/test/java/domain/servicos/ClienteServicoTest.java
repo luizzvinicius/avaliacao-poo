@@ -3,6 +3,7 @@ package domain.servicos;
 import avaliacao.luiz.domain.entities.Cliente;
 import avaliacao.luiz.domain.entities.Empresa;
 import avaliacao.luiz.domain.entities.PessoaFisica;
+import avaliacao.luiz.domain.exceptions.NaoEncontradoExpt;
 import avaliacao.luiz.domain.exceptions.RegistroDuplicadoExpt;
 import avaliacao.luiz.domain.servicos.ClienteServico;
 import avaliacao.luiz.infra.ClienteDao;
@@ -181,15 +182,17 @@ class ClienteServicoTest {
     }
 
     @Test
-    @DisplayName("selecionar Cliente deve retornar optional.empty não encontra cliente")
+    @DisplayName("Selecionar Cliente deve lançar exceção quando não encontra cliente")
     void deveExibirMensagemErroQuandoClienteNaoEncontrado() throws SQLException {
-        Cliente cliente = new PessoaFisica(94, "Ana", "11987654321", "11122233344", LocalDate.now());
+        when(util.lerInt(anyString())).thenReturn(99);
+        //when(clienteDao.select(anyInt())).thenReturn(Optional.empty());
+        when(conn.prepareStatement(anyString())).thenReturn(st);
+        when(st.executeQuery()).thenReturn(resultSet);
 
-        mockStatic(ClienteServico.class);
-        when(ClienteServico.select(conn, util)).thenReturn(cliente);
+        var expt = assertThrows(NaoEncontradoExpt.class, () -> {
+            ClienteServico.select(conn, util);
+        });
 
-        Cliente resultado = ClienteServico.select(conn, util);
-
-        assertNotNull(resultado);
+        assertEquals(expt.getMessage(), "Cliente não encontrado\n");
     }
 }
