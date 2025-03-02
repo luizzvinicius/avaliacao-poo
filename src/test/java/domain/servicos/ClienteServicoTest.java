@@ -49,38 +49,21 @@ class ClienteServicoTest {
 
     @Test()
     @DisplayName("Deve cadastrar pessoa fisica com sucesso")
-    void cadastrarPessoaFisicaSucesso() throws SQLException {
-//        when(util.lerOption(anyString(), anyInt(), anyInt())).thenReturn(1); // Cadastrar Cliente
-//        when(util.lerOption(anyString(), anyInt(), anyInt())).thenReturn(1); // Escolhe Pessoa Física
-//        when(util.lerString(anyString(), anyString())).thenReturn("teste pessoa fisica"); // ler nome
-//        when(util.lerOnzeDigitos(anyString(), anyString())).thenReturn("11987654321");
-//        when(util.lerOnzeDigitos(anyString(), anyString())).thenReturn("12345678901"); // ler cpf
-
-//        when(conn.prepareStatement(anyString())).thenReturn(st);
-//        when(st.executeUpdate()).thenReturn(1); // linhas afetadas
-//        when(st.executeQuery()).thenReturn(resultSet);
-//        when(resultSet.next()).thenReturn(true);
-
+    void cadastrarPessoaFisicaSucesso() {
         ClienteServico.cadastrar(conn, util);
         clienteDao.insert(any(Cliente.class));
         verify(clienteDao, never()).insert(any(Cliente.class));
     }
 
     @Test
-    void naoDeveCadastrarComTelefoneDuplicado() throws SQLException {
-//        when(util.lerOption(anyString(), anyInt(), anyInt())).thenReturn(1); // Cadastrar Cliente
-//        when(util.lerOption(anyString(), anyInt(), anyInt())).thenReturn(1); // Escolhe Pessoa Física
-//        when(util.lerString(anyString(), anyString())).thenReturn("teste pessoa fisica"); // ler nome
-//        when(util.lerOnzeDigitos(anyString(), anyString())).thenReturn("11987654321");
+    void naoDeveCadastrarComTelefoneDuplicado() {
         when(clienteDao.selectField("telefone", "82994877584")).thenThrow(new RegistroDuplicadoExpt("telefone"));
 
-//        when(conn.prepareStatement(anyString())).thenReturn(st);
-//        when(st.executeQuery()).thenReturn(resultSet);
         ClienteServico.cadastrar(conn, util);
 
-        var expt = assertThrows(RegistroDuplicadoExpt.class, () -> {
-            clienteDao.selectField("telefone", "82994877584");
-        });
+        var expt = assertThrows(RegistroDuplicadoExpt.class, () ->
+            clienteDao.selectField("telefone", "82994877584")
+        );
 
         assertEquals("telefone já cadastrado\n", expt.getMessage());
         verify(clienteDao, never()).insert(any(Cliente.class));
@@ -120,9 +103,9 @@ class ClienteServicoTest {
         when(st.executeQuery()).thenReturn(resultSet);
         ClienteServico.cadastrar(conn, util);
 
-        var expt = assertThrows(RegistroDuplicadoExpt.class, () -> {
-            clienteDao.selectField("cpf", cpf);
-        });
+        var expt = assertThrows(RegistroDuplicadoExpt.class, () ->
+            clienteDao.selectField("cpf", cpf)
+        );
 
         assertEquals("cpf já cadastrado\n", expt.getMessage());
         verify(clienteDao, never()).insert(any(Cliente.class));
@@ -144,16 +127,16 @@ class ClienteServicoTest {
         when(st.executeQuery()).thenReturn(resultSet);
         ClienteServico.cadastrar(conn, util);
 
-        var expt = assertThrows(RegistroDuplicadoExpt.class, () -> {
-            clienteDao.selectField("cnpj", cnpj);
-        });
+        var expt = assertThrows(RegistroDuplicadoExpt.class, () ->
+            clienteDao.selectField("cnpj", cnpj)
+        );
 
         assertEquals("cnpj já cadastrado\n", expt.getMessage());
         verify(clienteDao, never()).insert(any(Cliente.class));
     }
 
     @Test
-    void deveRetornarClienteQuandoEncontrado() throws SQLException {
+    void deveRetornarClienteQuandoEncontrado() {
         Cliente clienteEsperado = new PessoaFisica("Maria", "11999999999", "12345678900", LocalDate.now());
 
         when(clienteDao.select(anyInt())).thenReturn(Optional.of(clienteEsperado));
@@ -185,14 +168,13 @@ class ClienteServicoTest {
     @DisplayName("Selecionar Cliente deve lançar exceção quando não encontra cliente")
     void deveExibirMensagemErroQuandoClienteNaoEncontrado() throws SQLException {
         when(util.lerInt(anyString())).thenReturn(99);
-        //when(clienteDao.select(anyInt())).thenReturn(Optional.empty());
         when(conn.prepareStatement(anyString())).thenReturn(st);
         when(st.executeQuery()).thenReturn(resultSet);
 
-        var expt = assertThrows(NaoEncontradoExpt.class, () -> {
-            ClienteServico.select(conn, util);
-        });
+        var expt = assertThrows(NaoEncontradoExpt.class, () ->
+            ClienteServico.select(conn, util)
+        );
 
-        assertEquals(expt.getMessage(), "Cliente não encontrado\n");
+        assertEquals("Cliente não encontrado\n", expt.getMessage());
     }
 }

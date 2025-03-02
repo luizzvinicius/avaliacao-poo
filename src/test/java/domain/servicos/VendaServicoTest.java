@@ -3,20 +3,14 @@ package domain.servicos;
 import avaliacao.luiz.domain.entities.*;
 import avaliacao.luiz.domain.servicos.*;
 import avaliacao.luiz.infra.ClienteDao;
-import avaliacao.luiz.infra.CompraDao;
-import avaliacao.luiz.infra.ItemVendaDao;
-import avaliacao.luiz.infra.PagamentoDao;
 import avaliacao.luiz.utils.Utils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -33,28 +27,7 @@ class VendaServicoTest {
     private Utils utils;
 
     @Mock
-    private PreparedStatement st;
-
-    @Mock
-    private ResultSet resultSet;
-
-    @Mock
     private ClienteDao clienteDao;
-
-    @Mock
-    private ProdutoServico produtoServico;
-
-    @Mock
-    private CompraDao compraDao;
-
-    @Mock
-    private ItemVendaDao itemVendaDao;
-
-    @Mock
-    private PagamentoDao pagamentoDao;
-
-    @InjectMocks
-    private VendaServico vendaServico;
 
     @Test
     void deveVenderProdutoCorretamente() {
@@ -74,7 +47,6 @@ class VendaServicoTest {
         );
         Mockito.mockStatic(ProdutoServico.class);
         when(ProdutoServico.select(conn)).thenReturn(produtos);
-
 
         List<Produto> carrinho = List.of(produtos.getFirst());
         var teclado = carrinho.getFirst();
@@ -107,8 +79,8 @@ class VendaServicoTest {
 
         assertNotNull(cliente, "O cliente não deveria ser nulo.");
         assertEquals(2, produtos.size(), "A lista de produtos deveria ter 2 itens.");
-        assertEquals("Teclado", produtos.get(0).getNome(), "O primeiro produto deveria ser um Teclado.");
-        assertEquals(150.0, produtos.get(0).getPreco(), "O preço do teclado deveria ser 150.");
+        assertEquals("Teclado", produtos.getFirst().getNome(), "O primeiro produto deveria ser um Teclado.");
+        assertEquals(150.0, produtos.getFirst().getPreco(), "O preço do teclado deveria ser 150.");
         assertTrue((teclado.getQuantidade() > 1 && teclado.getQuantidade() < 11));
         assertEquals("PIX", pagamento.getTipo(), "O pagamento deveria ser via PIX.");
         assertEquals(150, pagamento.getTotal(), "O valor do pagamento deveria ser 150.");

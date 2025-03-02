@@ -11,7 +11,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import static org.mockito.ArgumentMatchers.anyString;
@@ -27,9 +26,6 @@ class ItemVendaServicoTest {
 
     @Mock
     private PreparedStatement st;
-
-    @Mock
-    private ResultSet resultSet;
 
     @InjectMocks
     private ItemVendaServico clienteServico;

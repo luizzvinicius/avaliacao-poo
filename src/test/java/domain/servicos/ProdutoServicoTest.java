@@ -71,9 +71,9 @@ class ProdutoServicoTest {
         when(st.executeQuery()).thenReturn(resultSet);
 
         ProdutoServico.insert(conn, util);
-        var expt = assertThrows(RegistroDuplicadoExpt.class, () -> {
-            produtoDao.select(p.getNome());
-        });
+        var expt = assertThrows(RegistroDuplicadoExpt.class, () ->
+                produtoDao.select(p.getNome())
+        );
 
         assertEquals("nome já cadastrado\n", expt.getMessage());
         verify(produtoDao, never()).insert(any(Produto.class));
@@ -88,9 +88,9 @@ class ProdutoServicoTest {
         when(conn.prepareStatement(anyString())).thenReturn(st);
         when(st.executeQuery()).thenReturn(resultSet);
 
-        var expt = assertThrows(EntradaInvalidaExpt.class, () -> {
-            ProdutoServico.insert(conn, util);
-        });
+        var expt = assertThrows(EntradaInvalidaExpt.class, () ->
+                ProdutoServico.insert(conn, util)
+        );
 
         assertEquals("Preço inválido\n", expt.getMessage());
         verify(produtoDao, never()).insert(any(Produto.class));
@@ -106,9 +106,9 @@ class ProdutoServicoTest {
         when(conn.prepareStatement(anyString())).thenReturn(st);
         when(st.executeQuery()).thenReturn(resultSet);
 
-        var expt = assertThrows(EntradaInvalidaExpt.class, () -> {
-            ProdutoServico.insert(conn, util);
-        });
+        var expt = assertThrows(EntradaInvalidaExpt.class, () ->
+                ProdutoServico.insert(conn, util)
+        );
 
         assertEquals("Quantidade inválido\n", expt.getMessage());
         verify(produtoDao, never()).insert(any(Produto.class));
