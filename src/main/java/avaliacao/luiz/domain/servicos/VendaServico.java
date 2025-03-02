@@ -32,7 +32,7 @@ public class VendaServico {
                 if (produtosFiltrados.isEmpty()) throw new NaoEncontradoExpt("Produtos");
             } catch (NaoEncontradoExpt e) {
                 System.out.println(e.getMessage());
-                return; // ou break
+                break;
             }
             utils.mostraArrayFormatado(produtosFiltrados);
             int indexProduto = utils.lerOption("Selecione o produto: ", 1, produtos.size(), "Produto selecionado inválido");
@@ -46,6 +46,9 @@ public class VendaServico {
             if (continuar == 2) break;
         }
 
+        if (carrinho.isEmpty()) {
+            return;
+        }
         fechamentoConta(conn, utils, c, carrinho, idCompra);
     }
 

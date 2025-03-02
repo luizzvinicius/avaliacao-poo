@@ -34,7 +34,6 @@ public class ProdutoDao {
             st.setDouble(1, novaQtd);
             st.setInt(2, p.getId());
             st.executeUpdate();
-            System.out.println("Quantidade atualizada.");
         } catch (SQLException e) {
             System.out.println("Erro ao atualizar produto: " + e.getMessage());
         }
