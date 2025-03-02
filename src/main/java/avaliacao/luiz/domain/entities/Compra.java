@@ -20,27 +20,19 @@ public class Compra {
         this.dataCompra = dataCompra;
     }
 
-    public int getIdCliente() {
-        return idCliente;
+    public int getId() {
+        return id;
     }
 
-    public void setIdCliente(int idCliente) {
-        this.idCliente = idCliente;
+    public int getIdCliente() {
+        return idCliente;
     }
 
     public int getIdPagamento() {
         return idPagamento;
     }
 
-    public void setIdPagamento(int idPagamento) {
-        this.idPagamento = idPagamento;
-    }
-
     public LocalDateTime getDataCompra() {
         return dataCompra;
-    }
-
-    public void setDataCompra(LocalDateTime dataCompra) {
-        this.dataCompra = dataCompra;
     }
 }

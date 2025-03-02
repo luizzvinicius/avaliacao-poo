@@ -48,7 +48,7 @@ public class ItemVenda {
         sb.append("idProduto ").append(idProduto).append(" | ");
         sb.append("idCompra ").append(idCompra).append(" | ");
         sb.append("Preco R$").append(preco).append(" | ");
-        sb.append("Quantidade ").append(quantidade).append(" | ");
+        sb.append("Quantidade ").append(quantidade);
         return sb.toString();
     }
 }

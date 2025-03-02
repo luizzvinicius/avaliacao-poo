@@ -28,10 +28,6 @@ public class PessoaFisica extends Cliente {
         return dataNascimento;
     }
 
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Pessoa Física ");

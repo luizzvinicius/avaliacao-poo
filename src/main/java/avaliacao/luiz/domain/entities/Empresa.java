@@ -25,9 +25,6 @@ public class Empresa extends Cliente {
         return nomeResponsavel;
     }
 
-    public void setNomeResponsavel(String nomeResponsavel) {
-        this.nomeResponsavel = nomeResponsavel;
-    }
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Empresa ");
